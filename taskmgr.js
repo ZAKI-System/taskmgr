@@ -1,5 +1,6 @@
 #!"C:/Program Files/nodejs/node.exe"
 /*eslint-env node*/
+// @ts-check
 
 const cgi = (process.env.GATEWAY_INTERFACE != undefined);
 
@@ -61,7 +62,7 @@ if (cgi) {
     process.stdout.write(JSON.stringify(value));
   });
 } else {
-  const server = http.createServer(async (req, res) => {
+  const server = http?.createServer(async (req, res) => {
     res.writeHead(200, {
       "Content-Type": "application/json; charset=UTF-8",
       "Access-Control-Allow-Origin": "*"
@@ -69,5 +70,5 @@ if (cgi) {
     // res.end(JSON.stringify(getInfo()));
     res.end(JSON.stringify(await getInfo()));
   });
-  server.listen(8080);
+  server?.listen(8080);
 }
