@@ -1,10 +1,10 @@
 #!"C:/Program Files/nodejs/node.exe"
-/*eslint-env node*/
 // @ts-check
+/*eslint-env node*/
 
 const cgi = (process.env.GATEWAY_INTERFACE != undefined);
 
-const http = cgi ? null : require("http");
+const http = require("http");
 // import * as http from "http";
 const os = require('os');
 // import * as os from "os";
@@ -56,19 +56,22 @@ async function getInfo() {
 }
 
 if (cgi) {
-  process.stdout.write("Content-Type: application/json; charset=UTF-8\n\n");
   getInfo()
   .then((value) => {
+    process.stdout.write(`Content-Length: ${Buffer.byteLength(JSON.stringify(value))}\n`);
+    process.stdout.write("Content-Type: application/json; charset=UTF-8\n\n");
     process.stdout.write(JSON.stringify(value));
   });
 } else {
-  const server = http?.createServer(async (req, res) => {
+  const server = http.createServer(async (req, res) => {
+    const info = await getInfo();
     res.writeHead(200, {
+      "Content-Length": Buffer.byteLength(JSON.stringify(info)),
       "Content-Type": "application/json; charset=UTF-8",
       "Access-Control-Allow-Origin": "*"
     });
     // res.end(JSON.stringify(getInfo()));
-    res.end(JSON.stringify(await getInfo()));
+    res.end(JSON.stringify(info));
   });
-  server?.listen(8080);
+  server.listen(8080);
 }
